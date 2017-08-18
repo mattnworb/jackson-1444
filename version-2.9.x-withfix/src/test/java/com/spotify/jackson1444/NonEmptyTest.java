@@ -23,7 +23,11 @@ public class NonEmptyTest {
       .configure(ORDER_MAP_ENTRIES_BY_KEYS, true);
 
   private final ObjectWriter objectWriter = objectMapper
-      .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+      // !!!! difference from version-2.9.x module:
+      .setDefaultPropertyInclusion(
+          //parameters are valueIncl=NON_EMPTY, contentIncl=ALWAYS
+          JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.ALWAYS)
+      )
       .writer();
 
   @Test

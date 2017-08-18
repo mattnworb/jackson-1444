@@ -9,7 +9,7 @@ The same test is repeated for three cases:
 
 - jackson-databind:2.8.9: should pass
 - jackson-databind:2.9.0: should fail
-- jackson-databind:2.9.0 with a different configuration: should pass
+- jackson-databind:2.9.0 with a different ObjectMapper configuration: should pass
 
 To run all tests in the repo, continuing after failures in some modules, run
 `mvn test -Dmaven.test.failure.ignore=true` (but ignore the "Reactor Summary").
@@ -46,3 +46,21 @@ public class NonEmptyTest {
   }
 }
 ```
+
+The fix to get the 2.8 behavior we expect in this test/logic from helio's JobId
+hashing is to configure the ObjectMapper differently:
+
+```diff
+-      .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
++      .setDefaultPropertyInclusion(
++          //parameters are valueIncl=NON_EMPTY, contentIncl=ALWAYS
++          JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.ALWAYS)
++      )
+```
+
+in Jackson 2.9, setSerializationInclusion(JsonInclude.Include.NON_EMPTY) sets
+both "value" and "content" inclusion as `NON_EMPTY`.
+
+The behavior that Helios's JobId hash is relying on is to include non-empty
+"values" but to always include "content" (a Map with a value which is a Map
+with a value which is a Map which is a value of empty Map should be included).
