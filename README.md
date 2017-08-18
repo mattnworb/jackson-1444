@@ -11,9 +11,6 @@ The same test is repeated for three cases:
 - jackson-databind:2.9.0: should fail
 - jackson-databind:2.9.0 with a different ObjectMapper configuration: should pass
 
-To run all tests in the repo, continuing after failures in some modules, run
-`mvn test -Dmaven.test.failure.ignore=true` (but ignore the "Reactor Summary").
-
 The test that we run is:
 
 ```java
